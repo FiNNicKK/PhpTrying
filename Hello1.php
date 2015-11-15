@@ -5,9 +5,15 @@
  * Date: 25.10.2015
  * Time: 17:26
  */
+include 'simple_html_dom.php';
 $url = "http://l2on.net/?c=market&a=item&id=1869&setworld=1092" ;
-if ($arResult = getURL($url))
-    echo $arResult['content'];
+$regex = "/\<div id=\"shops\"\>(.*)\<\/tr\>/";
+if ($arResult = getURL($url)) {
+    //echo iconv("windows-1251","utf-8",$arResult['content']);
+    //preg_match_all($regex, iconv("windows-1251", "utf-8", $arResult['content']), $matches);
+    //print_r($matches);
+    $ret = $arResult['content']->find('.tablesorter');
+}
 
 
 function getURL($url, $cookie = false, $timeout = 30, $maxRedirs = 7)
@@ -16,6 +22,7 @@ function getURL($url, $cookie = false, $timeout = 30, $maxRedirs = 7)
     $header[] = "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
     $header[] = "Connection: keep-alive";
     $header[] = "Keep-Alive: 300";
+    $header[] = "Accept-Charset: Windows-1251;q=0.7,*;q=0.7";
     $header[] = "Accept-Language: ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3";
     $header[] = "Pragma: ";
     curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0");
