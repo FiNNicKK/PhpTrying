@@ -6,13 +6,11 @@
  * Time: 17:26
  */
 include 'simple_html_dom.php';
-$url = "http://l2on.net/?c=market&a=item&id=1869&setworld=1092" ;
-$regex = "/\<div id=\"shops\"\>(.*)\<\/tr\>/";
-if ($arResult = getURL($url)) {
-    //echo iconv("windows-1251","utf-8",$arResult['content']);
-    //preg_match_all($regex, iconv("windows-1251", "utf-8", $arResult['content']), $matches);
-    //print_r($matches);
-    $ret = $arResult['content']->find('.tablesorter');
+//$url = "http://l2on.net/?c=market&a=item&id=".$i"&setworld=1094" ;
+for($i=1869;$i<1870;$i++){
+    $url = "http://l2on.net/?c=market&a=item&id=$i&setworld=1094" ;
+    echo $url;
+    getArrayOfValues($url);
 }
 
 
@@ -69,4 +67,59 @@ function getURL($url, $cookie = false, $timeout = 30, $maxRedirs = 7)
         return $data;
     } else
         return false;
+}
+function getArrayOfValues($url){
+    if ($arResult = getURL($url)) {
+        $html = str_get_html($arResult['content']);
+        foreach($html->find("h1") as $t) {
+            $th  = $t->innertext;
+            $title = preg_replace("'<img src[^>]*?>.*?</sup>'si","",$th);
+            echo $title;
+        }
+        foreach($html->find("h2") as $b) {
+            $bh  = $b->innertext;
+            $bh = preg_replace("'<span class=\"oper-(sell|buy)\">'si","",$bh);
+            $sellOrBuy[] = preg_replace("'</span><span class=\"add\">.*?</a>\)</span>'si","",$bh);
+            print_r($sellOrBuy);
+        }
+        $arr=array("Испорченная","Испорченный","Испорченные","Испорченное","&nbsp;");
+        $titlee = trim(str_ireplace($arr,"",$title));
+        $thIteration = 0;
+        $sobIteration = 0;
+        $element = 0;
+        foreach ($html->find('.tablesorter') as $tablesorter) {
+            $colNumber = 0;
+            foreach ($tablesorter->find('thead') as $header) {
+                foreach ($header->find('th') as $header) {
+                    if ($thIteration == 0) {
+                        if (($header->plaintext == "Цена")   ||
+                            ($header->plaintext == "Кол-во") ||
+                            ($header->plaintext == "Мод.")   ||
+                            ($header->plaintext == "Замечен")) {
+                            $colNumber++;
+                            $tableColumnPointers[] = $header->plaintext;
+                            print_r($tableColumnPointers);
+                        }
+                    }
+                }
+                $thIteration++;
+            }
+            foreach ($tablesorter->find('tr') as $trshop) {
+                $iterator =0;
+                $arIterator =0;
+                foreach ($trshop->find('td') as $tdr) {
+                    if (($iterator <= $colNumber)&&($iterator>0)) {
+                        $result[$titlee][$sellOrBuy[$sobIteration]][$element][$tableColumnPointers[$arIterator]] = $tdr->plaintext;
+                        $arIterator++;
+                    }
+                    $iterator++;
+                }
+                //if ($element!=0)
+                //$result[$titlee][$sellOrBuy[$sobIteration]][$element]["Замечен"] = $trshop->find('span',2)->plaintext;
+                $element++;
+            }
+            $sobIteration++;
+        }
+        print_r($result);
+    }
 }
