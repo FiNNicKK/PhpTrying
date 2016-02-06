@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="a0663af4-9ba3-47f6-96ae-2848f39ba129" name="Xamp Apa" url="http://localhost">
+        <fileTransfer mountedRoot="C:\Users\Iliya\PhpstormProjects\PhpTrying" accessType="MOUNT" />
+      </webServer>
+    </option>
+  </component>
+</project>
