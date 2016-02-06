@@ -205,7 +205,3 @@ function getRecepiesL2helpme($start1, $end1)
         return ($itemBook);
 
 }
-function sortMass (array $mass)
-{
-
-}
